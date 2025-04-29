@@ -58,24 +58,23 @@ module LevoRailsmiddleware
     end
     
     def extract_body(body)
-      return "" unless body
-      
+      return "".dup unless body  # Return unfrozen empty string
+
       body.rewind
-      content = body.read
+      content = body.read.to_s.dup  # Force string conversion and unfreeze
       body.rewind
       
       # Check size threshold
       if content.bytesize > LevoRailsmiddleware.configuration.size_threshold_kb * 1024
-        return "[CONTENT TOO LARGE]"
+        "[CONTENT TOO LARGE]"
+      else
+        filter_sensitive_data(content)
       end
-      
-      # Filter sensitive parameters
-      filter_sensitive_data(content)
     end
 
     def extract_response_body(body)
-      # Create a new unfrozen string to collect the response
-      content = ""
+      # Start with unfrozen empty string
+      content = "".dup
 
       # Safely collect response body parts
       if body.respond_to?(:each)
@@ -88,13 +87,11 @@ module LevoRailsmiddleware
         content = body.to_s.dup
       end
 
-      # Check size threshold
       if content.bytesize > LevoRailsmiddleware.configuration.size_threshold_kb * 1024
-        return "[CONTENT TOO LARGE]"
+        "[CONTENT TOO LARGE]"
+      else
+        filter_sensitive_data(content)
       end
-
-      # Filter sensitive parameters
-      filter_sensitive_data(content)
     end
     
     def headers_to_hash(headers)
@@ -106,6 +103,7 @@ module LevoRailsmiddleware
     end
 
     def filter_sensitive_data(content)
+      # Start with fresh unfrozen copy
       filtered = content.to_s.dup
       LevoRailsmiddleware.configuration.filter_params.each do |param|
         # Simple regex to find and replace sensitive data
