@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
-require 'levo_rails_mirror/version'
-require 'levo_rails_mirror/configuration'
-require 'levo_rails_mirror/middleware'
-require 'levo_rails_mirror/entry'
-require 'levo_rails_mirror/sender'
+require 'levo_rails_middleware/version'
+require 'levo_rails_middleware/configuration'
+require 'levo_rails_middleware/middleware'
+require 'levo_rails_middleware/entry'
+require 'levo_rails_middleware/sender'
 
-module LevoRailsMirror
+module LevoRailsmiddleware
   class << self
     attr_writer :configuration
     
@@ -22,14 +22,14 @@ module LevoRailsMirror
     
     # Add middleware to Rails application
     def instrument(app_config)
-      app_config.middleware.insert_before 'Rails::Rack::Logger', LevoRailsMirror::Middleware
+      app_config.middleware.insert_before 'Rails::Rack::Logger', LevoRailsmiddleware::Middleware
     end
     
     # Log exceptions
     def log_exception(context, exception)
-      Rails.logger.error "LEVO_MIRROR: Exception while #{context}: #{exception.message} (#{exception.class.name})"
+      Rails.logger.error "LEVO_middleware: Exception while #{context}: #{exception.message} (#{exception.class.name})"
       exception.backtrace&.each do |line|
-        Rails.logger.error "LEVO_MIRROR:   #{line}"
+        Rails.logger.error "LEVO_middleware:   #{line}"
       end
     end
   end
