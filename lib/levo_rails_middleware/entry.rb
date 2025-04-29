@@ -72,16 +72,16 @@ module LevoRailsmiddleware
       # Filter sensitive parameters
       filter_sensitive_data(content)
     end
-    
+
     def extract_response_body(body)
       content = ""
-      body.each { |part| content << part.to_s }
-      
+      body.each { |part| content << part.to_s.dup }  # Use .dup to create a mutable copy
+
       # Check size threshold
       if content.bytesize > LevoRailsmiddleware.configuration.size_threshold_kb * 1024
         return "[CONTENT TOO LARGE]"
       end
-      
+
       # Filter sensitive parameters
       filter_sensitive_data(content)
     end
@@ -93,12 +93,12 @@ module LevoRailsmiddleware
       end
       hash
     end
-    
+
     def filter_sensitive_data(content)
-      filtered = content.to_s
+      filtered = content.to_s.dup
       LevoRailsmiddleware.configuration.filter_params.each do |param|
         # Simple regex to find and replace sensitive data
-        filtered = filtered.gsub(/["']?#{param}["']?\s*[=:]\s*["']?[^"' &,\}]+["']?/, "#{param}=[FILTERED]")
+        filtered.gsub!(/["']?#{param}["']?\s*[=:]\s*["']?[^"' &,\}]+["']?/, "#{param}=[FILTERED]")
       end
       filtered
     end
