@@ -74,8 +74,19 @@ module LevoRailsmiddleware
     end
 
     def extract_response_body(body)
+      # Create a new unfrozen string to collect the response
       content = ""
-      body.each { |part| content << part.to_s.dup }  # Use .dup to create a mutable copy
+
+      # Safely collect response body parts
+      if body.respond_to?(:each)
+        body.each do |part|
+          # Create a duplicate of the string to avoid frozen string issues
+          content << part.to_s.dup
+        end
+      else
+        # Handle case where body might be a string or other object
+        content = body.to_s.dup
+      end
 
       # Check size threshold
       if content.bytesize > LevoRailsmiddleware.configuration.size_threshold_kb * 1024
