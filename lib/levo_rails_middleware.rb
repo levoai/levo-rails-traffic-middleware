@@ -9,22 +9,23 @@ require 'levo_rails_middleware/sender'
 module LevoRailsmiddleware
   class << self
     attr_writer :configuration
-    
+
     # Access the configuration
     def configuration
       @configuration ||= Configuration.new
     end
-    
+
     # Configure the middleware
     def configure
       yield(configuration) if block_given?
     end
-    
+
     # Add middleware to Rails application
     def instrument(app_config)
-      app_config.middleware.insert_before 'Rails::Rack::Logger', LevoRailsmiddleware::Middleware
+      # Use the class constant instead of a string
+      app_config.middleware.use LevoRailsmiddleware::Middleware  # Changed from insert_before with string
     end
-    
+
     # Log exceptions
     def log_exception(context, exception)
       Rails.logger.error "LEVO_middleware: Exception while #{context}: #{exception.message} (#{exception.class.name})"
