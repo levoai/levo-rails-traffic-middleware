@@ -142,17 +142,25 @@ module LevoRailsmiddleware
       # Convert headers to the expected format
       request_headers = {}
       entry.request[:headers].each do |name, value|
-        request_headers[name] = value
+        request_headers[name.downcase] = value
       end
+
+      # Add special headers that the backend expects
+      request_headers[":path"] = path
+      request_headers[":method"] = method
+      request_headers[":authority"] = request_headers["host"] if request_headers["host"]
 
       response_headers = {}
       entry.response[:headers].each do |name, value|
-        response_headers[name] = value
+        response_headers[name.downcase] = value
       end
+
+      # Add special response headers
+      response_headers[":status"] = entry.response[:status].to_s
 
       # Build the trace structure
       {
-        "http_scheme" => (entry.request[:headers]['x-forwarded-proto'] || 'http'),
+        "http_scheme" => (request_headers['x-forwarded-proto'] || 'http'),
         "request" => {
           "headers" => request_headers,
           "body" => entry.request[:body],
