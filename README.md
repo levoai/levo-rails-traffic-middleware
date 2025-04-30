@@ -53,7 +53,7 @@ require 'levo_rails_middleware'
 
 LevoRailsMiddleware.configure do |config|
     # Required: URL for the Levo.ai traffic collector
-    config.remote_url = ENV['LEVO_MIDDLEWARE_URL']
+    config.remote_url = ENV['LEVO_SATELLITE_URL']
       
     # Optional configuration with defaults shown
     config.sampling_rate = 1.0       # 100% of traffic
@@ -88,7 +88,7 @@ end
 For Heroku applications, you'll need to set the environment variable for the Levo middleware URL:
 
 ```bash
-heroku config:set LEVO_MIDDLEWARE_URL='https://collector.levo.ai (Replace with your own Satellite url'
+heroku config:set LEVO_SATELLITE_URL='https://collector.levo.ai (Replace with your own Satellite url'
 heroku config:set LEVOAI_ORG_ID='your-org-id'
 heroku config:set LEVO_ENV='your-environment-name, like Production or Staging'
 
@@ -98,7 +98,7 @@ heroku config:set LEVO_ENV='your-environment-name, like Production or Staging'
 
 | Option | Description | Default |
 | ------ | ----------- | ------- |
-| `remote_url` | The URL to send mirrored traffic to | `ENV['LEVO_MIDDLEWARE_URL']` |
+| `remote_url` | The URL to send mirrored traffic to | `ENV['LEVO_SATELLITE_URL']` |
 | `sampling_rate` | Percentage of requests to mirror (0.0 to 1.0) | `1.0` (100%) |
 | `exclude_paths` | Array of path prefixes to exclude from mirroring | `['/assets/', '/packs/', '/health']` |
 | `filter_params` | Array of parameter names to filter (sensitive data) | `['password', 'token', 'api_key', 'secret']` |
@@ -115,7 +115,7 @@ You may want to enable the middleware only in certain environments:
 ```ruby
 # In config/initializers/levo_middleware.rb
 LevoRailsMiddleware.configure do |config|
-  config.remote_url = ENV['LEVO_MIDDLEWARE_URL']
+  config.remote_url = ENV['LEVO_SATELLITE_URL']
   config.enabled = Rails.env.production? || Rails.env.staging?
 end
 ```
@@ -151,7 +151,7 @@ To verify the middleware is properly installed, check your logs for entries cont
 
 **No data appearing in Levo.ai dashboard**
 
-1. Verify the `LEVO_MIDDLEWARE_URL` is correct
+1. Verify the `LEVO_SATELLITE_URL` is correct
 2. Check your application logs for any errors containing `LEVO_MIRROR`
 3. Ensure the middleware is enabled and the sampling rate is > 0
 4. Confirm your network allows outbound connections to the Levo.ai service

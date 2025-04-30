@@ -8,7 +8,7 @@ module LevoRailsmiddleware
     attr_accessor :max_retries
     
     def initialize
-      @remote_url = ENV['LEVO_MIDDLEWARE_URL'] || 'https://collector.levo.ai'
+      @remote_url = ENV['LEVO_SATELLITE_URL'] || 'https://collector.levo.ai'
       @sampling_rate = 1.0  # 100% by default
       @exclude_paths = ['/assets/', '/packs/', '/health']
       @filter_params = ['password', 'token', 'api_key', 'secret']
