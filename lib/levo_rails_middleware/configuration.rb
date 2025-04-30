@@ -17,8 +17,8 @@ module LevoRailsmiddleware
       @enabled = true
       
       # Levo Satellite specific configuration
-      @organization_id = ENV['LEVOAI_ORG_ID'] || '8b7c7b08-948d-4847-bbe7-a30691f47326'
-      @environment_name = ENV['LEVO_ENV'] || 'rails'
+      @organization_id = ENV['LEVOAI_ORG_ID']
+      @environment_name = ENV['LEVO_ENV']
       @service_name = ENV['LEVO_SERVICE_NAME'] || 'rails-application'
       @host_name = get_hostname
       @max_retries = 3
