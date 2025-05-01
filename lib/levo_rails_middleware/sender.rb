@@ -163,12 +163,12 @@ module LevoRailsmiddleware
         "http_scheme" => (request_headers['x-forwarded-proto'] || 'http'),
         "request" => {
           "headers" => request_headers,
-          "body" => entry.request[:body],
+          "body" => Base64.strict_encode64(entry.request[:body].to_s),
           "truncated" => false
         },
         "response" => {
           "headers" => response_headers,
-          "body" => entry.response[:body],
+          "body" => Base64.strict_encode64(entry.response[:body].to_s),
           "truncated" => false,
           "status_code" => entry.response[:status]
         },
