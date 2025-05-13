@@ -1,0 +1,39 @@
+name: Version Check
+
+on:
+  pull_request:
+    paths:
+      - '**.rb'
+  push:
+    branches:
+      - main
+
+jobs:
+  check-version:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Get base branch version.rb
+        id: base_version
+        run: |
+          git fetch origin ${{ github.base_ref }} --depth=1
+          git show origin/${{ github.base_ref }}:lib/levo_rails_middleware/version.rb > base_version.rb
+
+      - name: Get head branch version.rb
+        id: head_version
+        run: |
+          cp lib/levo_rails_middleware/version.rb head_version.rb
+
+      - name: Compare versions
+        id: compare
+        run: |
+          BASE_VERSION=$(grep VERSION base_version.rb | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
+          HEAD_VERSION=$(grep VERSION head_version.rb | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
+          echo "Base version: $BASE_VERSION"
+          echo "Head version: $HEAD_VERSION"
+          if [ "$BASE_VERSION" = "$HEAD_VERSION" ]; then
+            echo "Version has not been updated! Please bump the version in lib/levo_rails_middleware/version.rb."
+            exit 1
+          fi
